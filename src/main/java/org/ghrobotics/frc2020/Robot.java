@@ -8,6 +8,7 @@
 package org.ghrobotics.frc2020;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -17,20 +18,26 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  public RobotContainer m_robotContainer;
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
    */
   @Override
   public void robotInit() {
+    m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void autonomousInit() {
+    m_robotContainer.getAutonomousCommand().schedule();
   }
 
   @Override
   public void autonomousPeriodic() {
+    CommandScheduler.getInstance().run();
   }
 
   @Override
@@ -39,6 +46,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    CommandScheduler.getInstance().run();
   }
 
   @Override
