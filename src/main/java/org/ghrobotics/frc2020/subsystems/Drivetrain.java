@@ -59,12 +59,12 @@ public class Drivetrain extends SubsystemBase {
 
   // Get the left drivetrain speed
   public double getLeftSpeedMetersPerSecond() {
-    return m_leftMaster.getEncoder().getVelocity() * kRotationsToMetersFactor * 60;
+    return m_leftMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60;
   }
 
   // Get the right drivetrain speed
   public double getRightSpeedMetersPerSecond() {
-    return m_rightMaster.getEncoder().getVelocity() * kRotationsToMetersFactor * 60;
+    return m_rightMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60;
   }
 
   // Get the current speeds
