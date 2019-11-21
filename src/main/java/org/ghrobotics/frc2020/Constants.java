@@ -17,7 +17,7 @@ public class Constants {
     public static final double kVVoltSecondsPerMeter = 1.96;
     public static final double kAVoltSecondsSquaredPerMeter = 0.06;
 
-    public static final double kP = 0.1;
+    public static final double kP = 0.236 * 12;
 
     public static double kRotationsToMetersFactor = 1 / kGearRatio
         * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches);
