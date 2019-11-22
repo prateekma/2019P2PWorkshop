@@ -5,6 +5,7 @@ import java.util.List;
 import org.ghrobotics.frc2020.subsystems.Drivetrain;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -23,9 +24,7 @@ import static org.ghrobotics.frc2020.Constants.DriveConstants.kSVolts;
 import static org.ghrobotics.frc2020.Constants.DriveConstants.kVVoltSecondsPerMeter;
 
 public class RobotContainer {
-
   private final Drivetrain m_drive = new Drivetrain();
-
 
   public Command getAutonomousCommand() {
     // Create config for trajectory
@@ -37,8 +36,8 @@ public class RobotContainer {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0, 0, new Rotation2d()),
         List.of(
-            new Translation2d(1, 1),
-            new Translation2d(2, -1)
+            new Translation2d(1, 0),
+            new Translation2d(2, 0)
         ),
         new Pose2d(3, 0, new Rotation2d()),
         config
@@ -48,16 +47,14 @@ public class RobotContainer {
         trajectory,
         m_drive::getPose,
         m_drive.getController(),
-        kSVolts, kVVoltSecondsPerMeter, kAVoltSecondsSquaredPerMeter,
+        new SimpleMotorFeedforward(kSVolts, kVVoltSecondsPerMeter, kAVoltSecondsSquaredPerMeter),
         m_drive.getKinematics(),
-        m_drive::getLeftSpeedMetersPerSecond,
-        m_drive::getRightSpeedMetersPerSecond,
+        m_drive::getSpeeds,
         new PIDController(kP, 0, 0),
         new PIDController(kP, 0, 0),
         m_drive::tankDriveVolts,
         m_drive
     );
-
     return command.andThen(() -> m_drive.tankDriveVolts(0, 0));
   }
 }

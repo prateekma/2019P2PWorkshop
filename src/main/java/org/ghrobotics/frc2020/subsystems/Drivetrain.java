@@ -14,10 +14,6 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kLeftMasterId;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kLeftSlave1Id;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kRightMasterId;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kRightSlave1Id;
 import static org.ghrobotics.frc2020.Constants.DriveConstants.kRotationsToMetersFactor;
 import static org.ghrobotics.frc2020.Constants.DriveConstants.kTrackWidthInches;
 
@@ -27,10 +23,10 @@ public class Drivetrain extends SubsystemBase {
   Pose2d m_pose = new Pose2d();
 
   // Create motors
-  private CANSparkMax m_leftMaster = new CANSparkMax(kLeftMasterId, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private CANSparkMax m_rightMaster = new CANSparkMax(kRightMasterId, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private CANSparkMax m_leftSlave1 = new CANSparkMax(kLeftSlave1Id, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private CANSparkMax m_rightSlave1 = new CANSparkMax(kRightSlave1Id, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private CANSparkMax m_leftMaster = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private CANSparkMax m_rightMaster = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private CANSparkMax m_leftSlave1 = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private CANSparkMax m_rightSlave1 = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
 
   // Gyro
   private AHRS m_gyro = new AHRS(SPI.Port.kMXP);
@@ -39,7 +35,7 @@ public class Drivetrain extends SubsystemBase {
   private DifferentialDriveKinematics m_kinematics
       = new DifferentialDriveKinematics(Units.inchesToMeters(kTrackWidthInches));
 
-  private DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(m_kinematics);
+  private DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(m_kinematics, getHeading());
   private RamseteController m_controller = new RamseteController(2.0, 0.7);
 
   // Ctor
@@ -57,23 +53,13 @@ public class Drivetrain extends SubsystemBase {
     m_rightMaster.set(rightVolts / 12.0);
   }
 
-  // Get the left drivetrain speed
-  public double getLeftSpeedMetersPerSecond() {
-    return m_leftMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60;
-  }
-
-  // Get the right drivetrain speed
-  public double getRightSpeedMetersPerSecond() {
-    return m_rightMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60;
-  }
-
   // Get the current speeds
   public DifferentialDriveWheelSpeeds getSpeeds() {
     return new DifferentialDriveWheelSpeeds(
-        getLeftSpeedMetersPerSecond(), getRightSpeedMetersPerSecond()
+        m_leftMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60,
+        m_rightMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60
     );
   }
-
   // Get the current heading
   public Rotation2d getHeading() {
     return Rotation2d.fromDegrees(-m_gyro.getAngle());
