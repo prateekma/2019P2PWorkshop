@@ -5,7 +5,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
@@ -14,73 +15,81 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kRotationsToMetersFactor;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kTrackWidthInches;
-
 public class Drivetrain extends SubsystemBase {
 
-  // The current robot pose
-  Pose2d m_pose = new Pose2d();
+  private static final double kGearRatio = 7.29;
+  private static final double kWheelRadiusInches = 3.0;
 
-  // Create motors
-  private CANSparkMax m_leftMaster = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private CANSparkMax m_rightMaster = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private CANSparkMax m_leftSlave1 = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private CANSparkMax m_rightSlave1 = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+  CANSparkMax leftMaster = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
+  CANSparkMax rightMaster = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-  // Gyro
-  private AHRS m_gyro = new AHRS(SPI.Port.kMXP);
+  CANSparkMax leftSlave = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
+  CANSparkMax rightSlave = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-  // Kinematics and odometry
-  private DifferentialDriveKinematics m_kinematics
-      = new DifferentialDriveKinematics(Units.inchesToMeters(kTrackWidthInches));
+  AHRS gyro = new AHRS(SPI.Port.kMXP);
 
-  private DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(m_kinematics, getHeading());
-  private RamseteController m_controller = new RamseteController(2.0, 0.7);
+  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
+  DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(kinematics, getHeading());
 
-  // Ctor
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.3, 1.96, 0.06);
+
+  PIDController leftPIDController = new PIDController(2.95, 0, 0);
+  PIDController rightPIDController = new PIDController(2.95, 0, 0);
+
+  Pose2d pose = new Pose2d();
+
   public Drivetrain() {
-    m_leftSlave1.follow(m_leftMaster);
-    m_rightSlave1.follow(m_rightMaster);
+    leftSlave.follow(leftMaster);
+    rightSlave.follow(rightMaster);
 
-    m_leftMaster.setInverted(false);
-    m_rightMaster.setInverted(true);
+    leftMaster.setInverted(false);
+    rightMaster.setInverted(true);
+
+    gyro.reset();
   }
 
-  // Drive the robot with voltage inputs
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
-    m_leftMaster.set(leftVolts / 12.0);
-    m_rightMaster.set(rightVolts / 12.0);
+  public Rotation2d getHeading() {
+    return Rotation2d.fromDegrees(-gyro.getAngle());
   }
 
-  // Get the current speeds
   public DifferentialDriveWheelSpeeds getSpeeds() {
     return new DifferentialDriveWheelSpeeds(
-        m_leftMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60,
-        m_rightMaster.getEncoder().getVelocity() * kRotationsToMetersFactor / 60
+        leftMaster.getEncoder().getVelocity() / kGearRatio * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches) / 60,
+        rightMaster.getEncoder().getVelocity() / kGearRatio * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches) / 60
     );
   }
-  // Get the current heading
-  public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(-m_gyro.getAngle());
+
+  public DifferentialDriveKinematics getKinematics() {
+    return kinematics;
   }
 
-  // Getter for kinematics
-  public final DifferentialDriveKinematics getKinematics() {
-    return m_kinematics;
-  }
-
-  public RamseteController getController() {
-    return m_controller;
-  }
-
-  // Get the pose
   public Pose2d getPose() {
-    return m_pose;
+    return pose;
+  }
+
+  public SimpleMotorFeedforward getFeedforward() {
+    return feedforward;
+  }
+
+  public PIDController getLeftPIDController() {
+    return leftPIDController;
+  }
+
+  public PIDController getRightPIDController() {
+    return rightPIDController;
+  }
+
+  public void setOutputVolts(double leftVolts, double rightVolts) {
+    leftMaster.set(leftVolts / 12);
+    rightMaster.set(rightVolts / 12);
+  }
+
+  public void reset() {
+    odometry.resetPosition(new Pose2d(), getHeading());
   }
 
   @Override
   public void periodic() {
-    m_pose = m_odometry.update(getHeading(), getSpeeds());
+    pose = odometry.update(getHeading(), getSpeeds());
   }
 }

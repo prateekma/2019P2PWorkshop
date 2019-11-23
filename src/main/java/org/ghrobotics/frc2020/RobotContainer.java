@@ -1,14 +1,12 @@
 package org.ghrobotics.frc2020;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.ghrobotics.frc2020.subsystems.Drivetrain;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -16,45 +14,37 @@ import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kAVoltSecondsSquaredPerMeter;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kMaxAccelerationFPS;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kMaxVelocityFPS;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kP;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kSVolts;
-import static org.ghrobotics.frc2020.Constants.DriveConstants.kVVoltSecondsPerMeter;
-
 public class RobotContainer {
-  private final Drivetrain m_drive = new Drivetrain();
+  private Drivetrain drive = new Drivetrain();
 
   public Command getAutonomousCommand() {
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(Units.feetToMeters(kMaxVelocityFPS), Units.feetToMeters(kMaxAccelerationFPS))
-            .setKinematics(m_drive.getKinematics());
+    TrajectoryConfig config = new TrajectoryConfig(
+        Units.feetToMeters(2.0), Units.feetToMeters(2.0));
+    config.setKinematics(drive.getKinematics());
 
-    // An example trajectory to follow
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(0, 0, new Rotation2d()),
-        List.of(
-            new Translation2d(1, 0),
-            new Translation2d(2, 0)
-        ),
-        new Pose2d(3, 0, new Rotation2d()),
+        Arrays.asList(new Pose2d(), new Pose2d(1.0, 0, new Rotation2d()),
+            new Pose2d(2.3, 1.2, Rotation2d.fromDegrees(90.0))),
         config
     );
 
     RamseteCommand command = new RamseteCommand(
         trajectory,
-        m_drive::getPose,
-        m_drive.getController(),
-        new SimpleMotorFeedforward(kSVolts, kVVoltSecondsPerMeter, kAVoltSecondsSquaredPerMeter),
-        m_drive.getKinematics(),
-        m_drive::getSpeeds,
-        new PIDController(kP, 0, 0),
-        new PIDController(kP, 0, 0),
-        m_drive::tankDriveVolts,
-        m_drive
+        drive::getPose,
+        new RamseteController(2, .7),
+        drive.getFeedforward(),
+        drive.getKinematics(),
+        drive::getSpeeds,
+        drive.getLeftPIDController(),
+        drive.getRightPIDController(),
+        drive::setOutputVolts,
+        drive
     );
-    return command.andThen(() -> m_drive.tankDriveVolts(0, 0));
+
+    return command.andThen(() -> drive.setOutputVolts(0, 0));
+  }
+
+  public void reset() {
+    drive.reset();
   }
 }

@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
 
-  public RobotContainer m_robotContainer;
+  RobotContainer container;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -27,12 +27,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_robotContainer = new RobotContainer();
+    container = new RobotContainer();
   }
 
   @Override
   public void autonomousInit() {
-    m_robotContainer.getAutonomousCommand().schedule();
+    container.reset();
+    container.getAutonomousCommand().schedule();
   }
 
   @Override
@@ -42,11 +43,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    container.reset();
   }
 
   @Override
   public void teleopPeriodic() {
-    CommandScheduler.getInstance().run();
   }
 
   @Override
@@ -57,4 +58,8 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
+  @Override
+  public void disabledPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 }

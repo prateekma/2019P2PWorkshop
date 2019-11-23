@@ -2,14 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e62271f-7469-4d3e-83cf-0bbf2bc2d5b9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/vendordeps/WPILibNewCommands.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/Constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/Constants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/Robot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/Robot.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/RobotContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/RobotContainer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/subsystems/Drivetrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/ghrobotics/frc2020/subsystems/Drivetrain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendordeps/REVRobotics.json" beforeDir="false" afterPath="$PROJECT_DIR$/vendordeps/REVRobotics.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -69,6 +66,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
+    <property name="full.screen.before.presentation.mode" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/vendordeps" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -149,7 +147,18 @@
       <option name="presentableId" value="Default" />
       <updated>1574017625102</updated>
       <workItem from="1574017631784" duration="1947000" />
+      <workItem from="1574464455288" duration="157000" />
+      <workItem from="1574473244805" duration="4228000" />
+      <workItem from="1574513508152" duration="2397000" />
     </task>
+    <task id="LOCAL-00001" summary="Update to Beta 3">
+      <created>1574464545492</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1574464545492</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -167,5 +176,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Update to Beta 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update to Beta 3" />
   </component>
 </project>
